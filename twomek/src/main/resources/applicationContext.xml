@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:aop="http://www.springframework.org/schema/aop" 
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<!-- 开启注解扫描 -->
+    <context:component-scan base-package="com.msp.service">
+    </context:component-scan>
+    <!-- 引入dbcp   数据库连接池 -->
+    <context:property-placeholder  location="classpath:db.properties"/>
+    <!-- 配置数据源 -->
+    <bean id="dataSource"  destroy-method="close"  class="org.apache.commons.dbcp.BasicDataSource">
+    		 <property name="driverClassName" value="${jdbc.driver}"/>
+	        <property name="url" value="${jdbc.url}"/>
+	        <property name="username" value="${jdbc.username}"/>
+	        <property name="password" value="${jdbc.password}"/>
+    </bean>
+    <!-- 配置SQLSessionFactory  加载mybatis配置文件并获得session -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    		<property name="dataSource"  ref="dataSource"></property>
+    		<property name="configLocation" value="classpath:mybatis-config.xml"></property>
+    </bean>
+    <!-- 配置扫描器   mybatis的对象由spring以bean的方式管理 -->
+    <bean	class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+    		<property name="basePackage"  value="com.msp.mapper"></property>
+    		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+    </bean>
+</beans>
